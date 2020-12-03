@@ -7,7 +7,7 @@ services:
     environment:
       - ELASTIC_URL=${ELASTIC_URL}
     ports:
-      - 9200:8000
+      - 8000:8000
       - 5678:5678
     networks:
       - transformer_net
@@ -24,7 +24,7 @@ services:
       - xpack.security.enabled=false
       - discovery.type=single-node
     ports:
-      - 8000:9200
+      - 9200:9200
     volumes:
       - ./docker_dependencies/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
       - docker_es_node_local_es_data:/usr/share/elasticsearch/data
