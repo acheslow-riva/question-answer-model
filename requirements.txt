@@ -1,0 +1,5 @@
+elasticsearch
+farm-haystack
+Flask
+Flask-Script
+ptvsd

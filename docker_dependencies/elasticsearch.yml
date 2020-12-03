@@ -1,0 +1,2 @@
+path.repo: ["/usr/share/elasticsearch/backup"]
+network.host: 0.0.0.0
