@@ -1,5 +1,5 @@
 elasticsearch
-farm-haystack
+farm-haystack==0.5.0
 Flask
 Flask-Script
 ptvsd

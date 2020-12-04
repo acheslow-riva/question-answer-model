@@ -664,11 +664,7 @@ class Roberta(LanguageModel):
         :return: Embeddings for each token in the input sequence.
 
         """
-        # import pickle
-        # pickle.dump((input_ids, padding_mask, segment_ids), open('app/static/batch.p', 'wb'))
         output_tuple = self.model(input_ids, padding_mask, segment_ids)
-        # if self.model == trace, call the model with no keyword arguments, and rearrange segment_ids and padding_mask
-        # also need to comment out the next if statement
         # if self.model.encoder.config.output_hidden_states == True:
         #     sequence_output, pooled_output, all_hidden_states = output_tuple[0], output_tuple[1], output_tuple[2]
         #     return sequence_output, pooled_output, all_hidden_states

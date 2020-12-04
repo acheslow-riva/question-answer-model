@@ -4,6 +4,7 @@ import torch
 import torch_neuron
 from time import time
 
+from haystack.reader.farm import FARMReader
 from flask import request, current_app, jsonify, abort, url_for
 from transformers.modeling_roberta import RobertaModel
 from . import main
@@ -18,13 +19,15 @@ def index():
     # return jsonify({"count": count})
     return jsonify({"hello":"Ryan"})
 
-@main.route('/model_info')
-def model_info():
-    model_head = current_app.finder.reader.inferencer.model.prediction_heads
-    return jsonify({"prediction_heads": dir(model_head[0])})
+@main.route('/load_default_model')
+def default_model():
+    model_name = "deepset/roberta-base-squad2"
+    current_app.finder.reader = FARMReader(model_name_or_path=model_name, num_processes=0, use_gpu=False)
+    current_app.finder.reader.inferencer.batch_size=1
+    return jsonify({"default model": 'loaded'})
 
-@main.route('/load')
-def load():
+@main.route('/load_traced_model')
+def load_traced_model():
     direct = os.listdir('app/static/data/language_model')
     if not 'traced_model.pt' in direct:
         inputs = pickle.load(open('app/static/single.p', 'rb'))
@@ -36,6 +39,18 @@ def load():
         traced_model = torch.neuron.trace(current_app.finder.reader.inferencer.model.language_model.model, example_inputs=inputs) 
         traced_model.save('app/static/data/language_model/traced_model.pt')
     current_app.finder.reader.inferencer.model.language_model.model = torch.jit.load('app/static/data/language_model/traced_model.pt')
+    current_app.finder.reader.inferencer.model.language_model.model.eval()
+    return jsonify({'done':'loading'})
+
+@main.route('/load_torch_model')
+def load_torch():
+    current_app.finder.reader.inferencer.model.language_model.model = torch.jit.load('app/static/data/language_model/torch_traced_model.pt')
+    current_app.finder.reader.inferencer.model.language_model.model.eval()
+    return jsonify({'done':'loading'})
+
+@main.route('/load_neuron_model')
+def load_neuron():
+    current_app.finder.reader.inferencer.model.language_model.model = torch.jit.load('app/static/data/language_model/neuron_traced_model.pt')
     current_app.finder.reader.inferencer.model.language_model.model.eval()
     return jsonify({'done':'loading'})
 

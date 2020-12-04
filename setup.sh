@@ -15,5 +15,5 @@ fi
 docker-compose down
 docker-compose build
 docker-compose up -d node-1 
-sleep 30
+sleep 35
 docker-compose up -d

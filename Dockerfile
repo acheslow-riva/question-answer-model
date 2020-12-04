@@ -21,10 +21,15 @@ RUN pip install neuron-cc[tensorflow]
 RUN pip install torch-neuron
 
 RUN yum install git -y && git clone https://github.com/deepset-ai/FARM.git
+RUN cd FARM && git checkout v0.5.0
 COPY docker_dependencies/requirements.txt /FARM/requirements.txt
 COPY docker_dependencies/language_model.py /FARM/farm/modeling/language_model.py
+COPY docker_dependencies/infer.py /FARM/farm/infer.py
 RUN cd FARM && pip install -r requirements.txt && \
     pip install --editable . 
+
+# RUN git clone https://github.com/deepset-ai/haystack.git
+# RUN cd haystack && pip install --editable .
 
 COPY requirements.txt /transformer_model/
 WORKDIR /transformer_model
