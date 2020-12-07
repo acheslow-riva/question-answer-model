@@ -30,12 +30,6 @@ services:
       - docker_es_node_local_es_data:/usr/share/elasticsearch/data
     networks:
       - transformer_net
-  neuron-rtd:
-    build:
-      context: ./docker_dependencies
-    container_name: neuron-rtd
-    devices:
-      - "/dev/neuron0"
   # kib:
   #   image: docker.elastic.co/kibana/kibana:7.9.3
   #   container_name: kib
