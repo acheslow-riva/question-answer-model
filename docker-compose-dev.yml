@@ -30,20 +30,20 @@ services:
       - docker_es_node_local_es_data:/usr/share/elasticsearch/data
     networks:
       - transformer_net
-  # kib:
-  #   image: docker.elastic.co/kibana/kibana:7.9.3
-  #   container_name: kib
-  #   environment: 
-  #     - ELASTICSEARCH_USERNAME=elastic
-  #     - ELASTICSEARCH_PASSWORD=changeme
-  #   ports:
-  #     - 5601:5601
-  #   volumes:
-  #     - ./docker_dependencies/kibana.yml:/usr/share/kibana/config/kibana.yml
-  #   networks: 
-  #     - transformer_net
-  #   depends_on: 
-  #     - node-1
+  kib:
+    image: docker.elastic.co/kibana/kibana:7.9.3
+    container_name: kib
+    environment: 
+      - ELASTICSEARCH_USERNAME=elastic
+      - ELASTICSEARCH_PASSWORD=changeme
+    ports:
+      - 5601:5601
+    volumes:
+      - ./docker_dependencies/kibana.yml:/usr/share/kibana/config/kibana.yml
+    networks: 
+      - transformer_net
+    depends_on: 
+      - node-1
 volumes:
   docker_es_node_local_es_data:
     external: true

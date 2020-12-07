@@ -1,3 +1,13 @@
+#!/bin/bash
+case $HOSTNAME in
+"ml-dev-01.ahrq.local")
+    MODE="DEV"
+    ;;
+*)
+    MODE="LOCAL"
+    ;;
+esac
+
 read_var() {
     VAR=$(grep $1 $2 | xargs)
     IFS="=" read -ra VAR <<< "$VAR"
@@ -12,8 +22,19 @@ if [ -z "$AWS_ACCESS_KEY_ID" ] || [ -z "$AWS_SECRET_ACCESS_KEY" ]; then
     exit 1
 fi
 
-docker-compose down
-docker-compose build
-docker-compose up -d node-1 
-sleep 35
-docker-compose up -d
+if [ $MODE == "LOCAL" ]; then
+    docker-compose -f docker-compose-dev.yml down
+    docker-compose -f docker-compose-dev.yml build
+    docker-compose -f docker-compose-dev.yml up -d node-1 
+    sleep 35
+    docker-compose -f docker-compose-dev.yml up -d
+else
+    mkdir /tmp/neuron_rtd_sock
+    chmod o+rwx /tmp/neuron_rtd_sock
+    docker-compose down
+    docker-compose build
+    docker-compose up -d node-1 
+    sleep 35
+    docker-compose up -d
+fi
+
