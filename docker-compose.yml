@@ -6,7 +6,7 @@ services:
     container_name: transformer
     environment:
       - ELASTIC_URL=${ELASTIC_URL}
-      - NEURON_RTD_ADDRESS=unix=/sock/neuron.sock
+      - NEURON_RTD_ADDRESS=unix:/sock/neuron.sock
     ports:
       - 8000:8000
       - 5678:5678
