@@ -38,13 +38,10 @@ services:
     build:
       context: ./docker_dependencies
     container_name: neuron-rtd
-    # devices:
-    #   - "/dev/neuron0"
-    environment:
-      - AWS_NEURON_VISIBLE_DEVICES="0"
+    devices:
+      - "/dev/neuron0"
     cap_add:
       - "IPC_LOCK"
-      - SYS_ADMIN
     volumes:
       - '/tmp/neuron_rtd_sock/:/sock'
 volumes:
