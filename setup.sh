@@ -31,6 +31,7 @@ if [ $MODE == "LOCAL" ]; then
 else
     mkdir /tmp/neuron_rtd_sock
     chmod o+rwx /tmp/neuron_rtd_sock
+    sudo service neuron-rtd stop
     docker-compose down
     docker-compose build
     docker-compose up -d node-1 
