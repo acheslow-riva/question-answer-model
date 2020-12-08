@@ -13,11 +13,7 @@ from . import main
 
 @main.route('/')
 def index():
-     
-    # print(f'Count: {count}', flush=True)
-
-    # return jsonify({"count": count})
-    return jsonify({"hello":"Ryan"})
+    return jsonify({"hello":"world"})
 
 @main.route('/load_default_model')
 def default_model():
@@ -31,26 +27,10 @@ def load_traced_model():
     direct = os.listdir('app/static/data/language_model')
     if not 'traced_model.pt' in direct:
         inputs = pickle.load(open('app/static/single.p', 'rb'))
-        # inputs = (batch['input_ids'], batch['padding_mask'], batch['segment_ids'])
         current_app.finder.reader.inferencer.model.language_model.model.eval()
-        # TODO: Figure out if example model inputs batch size affects model execution time.
-        # traced_model = torch.jit.trace(current_app.finder.reader.inferencer.model.language_model.model, inputs) # Trace with AWS Neuron instead of pytorch
-        # torch.jit.save(traced_model, 'app/static/data/language_model/traced_model.pt')
         traced_model = torch.neuron.trace(current_app.finder.reader.inferencer.model.language_model.model, example_inputs=inputs) 
         traced_model.save('app/static/data/language_model/traced_model.pt')
     current_app.finder.reader.inferencer.model.language_model.model = torch.jit.load('app/static/data/language_model/traced_model.pt')
-    current_app.finder.reader.inferencer.model.language_model.model.eval()
-    return jsonify({'done':'loading'})
-
-@main.route('/load_torch_model')
-def load_torch():
-    current_app.finder.reader.inferencer.model.language_model.model = torch.jit.load('app/static/data/language_model/torch_traced_model.pt')
-    current_app.finder.reader.inferencer.model.language_model.model.eval()
-    return jsonify({'done':'loading'})
-
-@main.route('/load_neuron_model')
-def load_neuron():
-    current_app.finder.reader.inferencer.model.language_model.model = torch.jit.load('app/static/data/language_model/neuron_traced_model.pt')
     current_app.finder.reader.inferencer.model.language_model.model.eval()
     return jsonify({'done':'loading'})
 

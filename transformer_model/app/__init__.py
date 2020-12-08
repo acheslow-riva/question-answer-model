@@ -1,4 +1,7 @@
 from flask import Flask
+import pickle
+import torch
+import torch_neuron
 from app.config import config
 
 from haystack import Finder
@@ -21,6 +24,15 @@ def create_app(config_name):
     reader = FARMReader(model_name_or_path=model_name, num_processes=0, use_gpu=False)
     app.finder = Finder(reader, retriever)
     app.finder.reader.inferencer.batch_size=1
+
+    direct = os.listdir('app/static/data/language_model')
+    if not 'traced_model.pt' in direct:
+        inputs = pickle.load(open('app/static/single.p', 'rb'))
+        app.finder.reader.inferencer.model.language_model.model.eval()
+        traced_model = torch.neuron.trace(app.finder.reader.inferencer.model.language_model.model, example_inputs=inputs) 
+        traced_model.save('app/static/data/language_model/traced_model.pt')
+    app.finder.reader.inferencer.model.language_model.model = torch.jit.load('app/static/data/language_model/traced_model.pt')
+    app.finder.reader.inferencer.model.language_model.model.eval()
 
     from app.main import main as main_blueprint
     app.register_blueprint(main_blueprint)
