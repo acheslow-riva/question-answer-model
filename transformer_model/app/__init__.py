@@ -17,7 +17,8 @@ def create_app(config_name):
     host = config[config_name].ELASTIC_URL
     port = config[config_name].ELASTIC_PORT
     index = config[config_name].ELASTIC_INDEX
-
+    use_traced_model = config[config_name].USE_TRACED_MODEL
+    print(index, flush=True)
     doc_store = ElasticsearchDocumentStore(host=host, port=port, username='elastic', password='changeme', index=index)
 
     retriever = ElasticsearchRetriever(document_store=doc_store)
@@ -26,14 +27,15 @@ def create_app(config_name):
     app.finder = Finder(reader, retriever)
     app.finder.reader.inferencer.batch_size=1
 
-    direct = os.listdir('app/static/data/language_model')
-    if not 'traced_model.pt' in direct:
-        inputs = pickle.load(open('app/static/single.p', 'rb'))
+    if use_traced_model:
+        direct = os.listdir('app/static/data/language_model')
+        if not 'traced_model.pt' in direct:
+            inputs = pickle.load(open('app/static/single.p', 'rb'))
+            app.finder.reader.inferencer.model.language_model.model.eval()
+            traced_model = torch.neuron.trace(app.finder.reader.inferencer.model.language_model.model, example_inputs=inputs) 
+            traced_model.save('app/static/data/language_model/traced_model.pt')
+        app.finder.reader.inferencer.model.language_model.model = torch.jit.load('app/static/data/language_model/traced_model.pt')
         app.finder.reader.inferencer.model.language_model.model.eval()
-        traced_model = torch.neuron.trace(app.finder.reader.inferencer.model.language_model.model, example_inputs=inputs) 
-        traced_model.save('app/static/data/language_model/traced_model.pt')
-    app.finder.reader.inferencer.model.language_model.model = torch.jit.load('app/static/data/language_model/traced_model.pt')
-    app.finder.reader.inferencer.model.language_model.model.eval()
 
     from app.main import main as main_blueprint
     app.register_blueprint(main_blueprint)

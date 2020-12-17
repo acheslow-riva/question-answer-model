@@ -40,5 +40,5 @@ def get_answers(query=None):
     query = request.args.get('query')
     if not query: query = 'what does ahrq stand for'
     response = current_app.finder.get_answers(query, top_k_retriever=5, top_k_reader=1)
-    return jsonify({'doc 1 text': response,
+    return jsonify({'response': response,
                     'Elapsed time': time()-start})

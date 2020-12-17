@@ -6,6 +6,8 @@ services:
     container_name: transformer
     environment:
       - ELASTIC_URL=${ELASTIC_URL}
+      - ELASTIC_INDEX=${ELASTIC_INDEX}
+      - FLASK_CONFIG=${FLASK_CONFIG}
       - NEURON_RTD_ADDRESS=unix:/sock/neuron.sock
     ports:
       - 8000:8000
@@ -17,6 +19,7 @@ services:
     depends_on: 
       - node-1
       - neuron-rtd
+    restart: always
   node-1:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.9.3
     container_name: node-1
@@ -34,17 +37,21 @@ services:
       - docker_es_node_local_es_data:/usr/share/elasticsearch/data
     networks:
       - transformer_net
+    restart: always
   neuron-rtd:
     build:
       context: ./docker_dependencies
     container_name: neuron-rtd
-    devices:
-      - "/dev/neuron0"
+    environment:
+      - AWS_NEURON_VISIBLE_DEVICES="0"
+    # devices:
+    #   - "/dev/neuron0"
     cap_add:
       - IPC_LOCK
       - SYS_ADMIN
     volumes:
       - '/tmp/neuron_rtd_sock/:/sock'
+    restart: always
 volumes:
   docker_es_node_local_es_data:
     external: true
