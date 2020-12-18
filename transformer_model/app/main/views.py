@@ -38,7 +38,8 @@ def load_traced_model():
 def get_answers(query=None):
     start = time()
     query = request.args.get('query')
+    top_k_retriever = request.args.get('top_k_retriever', 10)
     if not query: query = 'what does ahrq stand for'
-    response = current_app.finder.get_answers(query, top_k_retriever=5, top_k_reader=1)
+    response = current_app.finder.get_answers(query, top_k_retriever=top_k_retriever, top_k_reader=1)
     return jsonify({'response': response,
                     'Elapsed time': time()-start})
