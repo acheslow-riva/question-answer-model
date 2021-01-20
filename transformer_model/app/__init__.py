@@ -17,9 +17,10 @@ def create_app(config_name):
     host = config[config_name].ELASTIC_URL
     port = config[config_name].ELASTIC_PORT
     index = config[config_name].ELASTIC_INDEX
+    es_password = config[config_name].ELASTIC_PASSWORD
     use_traced_model = config[config_name].USE_TRACED_MODEL
     print(index, flush=True)
-    doc_store = ElasticsearchDocumentStore(host=host, port=port, username='elastic', password='changeme', index=index)
+    doc_store = ElasticsearchDocumentStore(host=host, port=port, username='elastic', password=es_password, index=index)
 
     retriever = ElasticsearchRetriever(document_store=doc_store)
     model_name = "deepset/roberta-base-squad2"
