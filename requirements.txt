@@ -1,5 +1,5 @@
-elasticsearch
-farm-haystack==0.5.0
-Flask
-Flask-Script
-ptvsd
+farm-haystack==0.7.0
+Flask-Script==2.0.6
+ptvsd==4.3.2
+neuron-cc[tensorflow]==1.2.2.0+eaf2e01fb
+torch-neuron==1.7.1.1.2.3.0
