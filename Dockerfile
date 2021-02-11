@@ -34,7 +34,7 @@ RUN cd FARM && pip install -r requirements.txt && \
 COPY requirements.txt /transformer_model/
 WORKDIR /transformer_model
 RUN pip install --no-cache-dir -r requirements.txt
-
+RUN pip install torch-neuron
 COPY transformer_model/ /transformer_model
 CMD python3 manage.py dev
 # CMD tail -F etc/hosts
