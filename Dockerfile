@@ -8,14 +8,14 @@ RUN echo $'[neuron] \nname=Neuron YUM Repository \nbaseurl=https://yum.repos.neu
         aws-neuron-runtime aws-neuron-tools python3 gcc-c++ &&\
     echo $'[global]\nextra-index-url = https://pip.repos.neuron.amazonaws.com' > /etc/pip.conf &&\
     pip3 install --upgrade pip &&\
-    pip install --no-cache-dir -r requirements.txt &&\
-    git clone https://github.com/deepset-ai/FARM.git &&\
-    git clone https://github.com/deepset-ai/haystack.git &&\
-    cd /FARM && git checkout v0.5.0 && pip install --editable . &&\
-    cd /haystack && pip install --editable .
+    pip install --no-cache-dir -r requirements.txt
+    # git clone https://github.com/deepset-ai/FARM.git &&\
+    # git clone https://github.com/deepset-ai/haystack.git &&\
+    # cd /FARM && git checkout v0.5.0 && pip install --editable . &&\
+    # cd /haystack && pip install --editable .
 
-COPY docker_dependencies/language_model.py /FARM/farm/modeling/language_model.py
-COPY docker_dependencies/infer.py /FARM/farm/infer.py
+# COPY docker_dependencies/language_model.py /FARM/farm/modeling/language_model.py
+# COPY docker_dependencies/infer.py /FARM/farm/infer.py
 
 COPY transformer_model/ /transformer_model
 
