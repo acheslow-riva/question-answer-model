@@ -44,6 +44,7 @@ services:
       # - node-1
       - neuron-rtd
     restart: always
+    command: tail -f /dev/null
   # node-1:
   #   image: docker.elastic.co/elasticsearch/elasticsearch:7.9.3
   #   container_name: node-1
