@@ -34,7 +34,7 @@ services:
       - NEURON_RTD_ADDRESS=unix:/sock/neuron.sock
     ports:
       - 8001:8000
-      - 5678:5678
+      - 5679:5678
     volumes:
       - '/tmp/neuron_rtd_sock/:/sock'
       - ./transformer_model:/transformer_model
