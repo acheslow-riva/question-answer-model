@@ -1,6 +1,6 @@
 FROM amazonlinux:2
 
-COPY ./requirements.txt /requirements.txt
+# COPY ./requirements.txt /requirements.txt
 RUN echo $'[neuron] \nname=Neuron YUM Repository \nbaseurl=https://yum.repos.neuron.amazonaws.com \nenabled=1 \nmetadata_expire=0' > /etc/yum.repos.d/neuron.repo &&\
     rpm --import https://yum.repos.neuron.amazonaws.com/GPG-PUB-KEY-AMAZON-AWS-NEURON.PUB &&\
     yum update -y &&\
