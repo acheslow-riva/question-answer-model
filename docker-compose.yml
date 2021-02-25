@@ -15,7 +15,7 @@ services:
       - 5678:5678
     volumes:
       - '/tmp/neuron_rtd_sock/:/sock'
-      - ./transformer_model/app/static/data/language_model:/transformer_model/app/static/data/language_model
+      - ./transformer_model:/transformer_model
     networks:
       - transformer_net
     depends_on: 
