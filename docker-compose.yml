@@ -23,7 +23,8 @@ services:
       - neuron-rtd
     restart: always
   torch:
-    image: amazonlinux:2
+    build:
+      context: ./dev
     working_dir: /transformer_model
     container_name: torch
     environment:
