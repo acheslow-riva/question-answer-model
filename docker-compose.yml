@@ -38,6 +38,7 @@ services:
     volumes:
       - '/tmp/neuron_rtd_sock/:/sock'
       - ./transformer_model:/transformer_model
+      - ./docker_dependencies/language_model.py:/usr/local/lib/python3.7/site-packages/farm/modeling/language_model.py
     networks:
       - transformer_net
     depends_on: 
