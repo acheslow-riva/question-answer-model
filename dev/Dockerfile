@@ -19,7 +19,7 @@ RUN echo $'[neuron] \nname=Neuron YUM Repository \nbaseurl=https://yum.repos.neu
 # COPY docker_dependencies/language_model.py /FARM/farm/modeling/language_model.py
 # COPY docker_dependencies/infer.py /FARM/farm/infer.py
 
-COPY transformer_model/ /transformer_model
+# COPY transformer_model/ /transformer_model
 
 WORKDIR /transformer_model
 CMD tail -f /dev/null
