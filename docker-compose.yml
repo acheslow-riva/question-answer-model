@@ -22,6 +22,28 @@ services:
       # - node-1
       - neuron-rtd
     restart: always
+  torch:
+    image: amazonlinux:2
+    working_dir: /transformer_model
+    container_name: torch
+    environment:
+      - ELASTIC_URL=${ELASTIC_URL}
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
+      - ELASTIC_INDEX=${ELASTIC_INDEX}
+      - FLASK_CONFIG=${FLASK_CONFIG}
+      - NEURON_RTD_ADDRESS=unix:/sock/neuron.sock
+    ports:
+      - 8001:8000
+      - 5678:5678
+    volumes:
+      - '/tmp/neuron_rtd_sock/:/sock'
+      - ./transformer_model:/transformer_model
+    networks:
+      - transformer_net
+    depends_on: 
+      # - node-1
+      - neuron-rtd
+    restart: always
   # node-1:
   #   image: docker.elastic.co/elasticsearch/elasticsearch:7.9.3
   #   container_name: node-1
