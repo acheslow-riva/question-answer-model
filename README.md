@@ -36,3 +36,20 @@ sudo service neuron-rtd stop
 ```
 
 Then you can restart the containers by running `docker-compose down && docker-compose up -d` from this repo in the `web.mgmt` profile.
+
+## Compile error
+
+```bash
+>>> model = torch.neuron.trace(app.finder.reader.inferencer.model.language_model.model, example_inputs=inputs, strict=False)
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  File "/usr/local/lib64/python3.7/site-packages/torch_neuron/convert.py", line 71, in trace
+    neuron_graph, jit_trace = to_graph(func, example_inputs, return_trace=True)
+  File "/usr/local/lib64/python3.7/site-packages/torch_neuron/convert.py", line 228, in to_graph
+    jit_trace = torch.jit.trace(func_or_mod, example_inputs)
+  File "/usr/local/lib64/python3.7/site-packages/torch/jit/_trace.py", line 742, in trace
+    _module_class,
+  File "/usr/local/lib64/python3.7/site-packages/torch/jit/_trace.py", line 940, in trace_module
+    _force_outplace,
+RuntimeError: Encountering a dict at the output of the tracer might cause the trace to be incorrect, this is only valid if the container structure does not change based on the module's inputs. Consider using a constant container instead (e.g. for `list`, use a `tuple` instead. for `dict`, use a `NamedTuple` instead). If you absolutely need this and know the side effects, pass strict=False to trace() to allow this behavior.
+```
