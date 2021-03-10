@@ -47,24 +47,24 @@ services:
       - neuron-rtd
     restart: always
     command: tail -f /dev/null
-  # node-1:
-  #   image: docker.elastic.co/elasticsearch/elasticsearch:7.9.3
-  #   container_name: node-1
-  #   environment:
-  #     - ELASTIC_PASSWORD=changeme
-  #     - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
-  #     - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
-  #     - cluster.name=dev_transformer_cluster
-  #     - xpack.security.enabled=false
-  #     - discovery.type=single-node
-  #   ports:
-  #     - 9200:9200
-  #   volumes:
-  #     - ./docker_dependencies/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
-  #     - docker_es_node_local_es_data:/usr/share/elasticsearch/data
-  #   networks:
-  #     - transformer_net
-  #   restart: always
+  node-1:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.9.3
+    container_name: node-1
+    environment:
+      - ELASTIC_PASSWORD=changeme
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - cluster.name=dev_transformer_cluster
+      - xpack.security.enabled=false
+      - discovery.type=single-node
+    ports:
+      - 9200:9200
+    volumes:
+      - ./docker_dependencies/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+      - docker_es_node_local_es_data:/usr/share/elasticsearch/data
+    networks:
+      - transformer_net
+    restart: always
   neuron-rtd:
     build:
       context: ./docker_dependencies
