@@ -11,7 +11,7 @@ services:
       - FLASK_CONFIG=${FLASK_CONFIG}
       - NEURON_RTD_ADDRESS=unix:/sock/neuron.sock
     ports:
-      - 8000:8000
+      # - 8000:8000
       - 5678:5678
     volumes:
       - '/tmp/neuron_rtd_sock/:/sock'
@@ -22,6 +22,7 @@ services:
       # - node-1
       - neuron-rtd
     restart: always
+    command: tail -f /dev/null
   torch:
     build:
       context: ./dev
@@ -34,7 +35,7 @@ services:
       - FLASK_CONFIG=${FLASK_CONFIG}
       - NEURON_RTD_ADDRESS=unix:/sock/neuron.sock
     ports:
-      - 8001:8000
+      - 8000:8000
       - 5679:5678
     volumes:
       - '/tmp/neuron_rtd_sock/:/sock'
@@ -46,7 +47,8 @@ services:
       # - node-1
       - neuron-rtd
     restart: always
-    command: tail -f /dev/null
+    # command: tail -f /dev/null
+    command: python3 manage.py dev
   # node-1:
   #   image: docker.elastic.co/elasticsearch/elasticsearch:7.9.3
   #   container_name: node-1
