@@ -6,7 +6,7 @@ from time import time
 
 from haystack.reader.farm import FARMReader
 from flask import request, current_app, jsonify, abort, url_for
-from transformers.modeling_roberta import RobertaModel
+# from transformers.modeling_roberta import RobertaModel
 from . import main
 
 # from elasticsearch import Elasticsearch

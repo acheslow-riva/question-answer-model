@@ -8,7 +8,7 @@ RUN echo $'[neuron] \nname=Neuron YUM Repository \nbaseurl=https://yum.repos.neu
         aws-neuron-runtime aws-neuron-tools python3 gcc-c++ &&\
     echo $'[global]\nextra-index-url = https://pip.repos.neuron.amazonaws.com' > /etc/pip.conf &&\
     pip3 install --upgrade pip &&\
-    pip install --no-cache-dir neuron-cc[tensorflow] torch-neuron farm-haystack
+    pip install --no-cache-dir neuron-cc[tensorflow] torch-neuron farm-haystack flask_script
     
     # git clone https://github.com/deepset-ai/FARM.git &&\
     # git clone https://github.com/deepset-ai/haystack.git &&\
