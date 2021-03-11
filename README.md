@@ -84,4 +84,4 @@ Traceback (most recent call last):
     result = self.forward(*input, **kwargs)
 RuntimeError: forward() is missing value for argument 'tensor'. Declaration: forward(__torch__.torch_neuron.convert.AwsNeuronGraphModule self, Tensor argument_1, Tensor tensor, Tensor argument_3) -> ((Tensor, Tensor))
 ```
-This is caused by the `forward` method of Roberta in `language_model.py`. 
+This is caused by the `forward` method of Roberta in `language_model.py`. This is caused by the order of the inputs. This may have been caused by the `single.p` file being generated incorrectly or from an old version?

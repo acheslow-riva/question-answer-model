@@ -668,7 +668,7 @@ class Roberta(LanguageModel):
 
         """
         # output_tuple = self.model(input_ids, padding_mask, segment_ids)
-        output_tuple = self.model(input_ids, attention_mask=padding_mask, token_type_ids=segment_ids)
+        output_tuple = self.model(input_ids, attention_mask=segment_ids, token_type_ids=padding_mask)
         # output_tuple = self.model(
         #     input_ids,
         #     token_type_ids=segment_ids,
