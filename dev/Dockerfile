@@ -1,6 +1,6 @@
 FROM amazonlinux:2
 
-# COPY ./requirements.txt /requirements.txt
+COPY ./requirements.txt /requirements.txt
 RUN echo $'[neuron] \nname=Neuron YUM Repository \nbaseurl=https://yum.repos.neuron.amazonaws.com \nenabled=1 \nmetadata_expire=0' > /etc/yum.repos.d/neuron.repo &&\
     rpm --import https://yum.repos.neuron.amazonaws.com/GPG-PUB-KEY-AMAZON-AWS-NEURON.PUB &&\
     yum update -y &&\
@@ -8,7 +8,8 @@ RUN echo $'[neuron] \nname=Neuron YUM Repository \nbaseurl=https://yum.repos.neu
         aws-neuron-runtime aws-neuron-tools python3 gcc-c++ &&\
     echo $'[global]\nextra-index-url = https://pip.repos.neuron.amazonaws.com' > /etc/pip.conf &&\
     pip3 install --upgrade pip &&\
-    pip install --no-cache-dir neuron-cc[tensorflow] torch-neuron farm-haystack flask_script
+    pip install --no-cache-dir -f requirements.txt
+    # pip install --no-cache-dir neuron-cc[tensorflow] torch-neuron farm-haystack flask_script
     
     # git clone https://github.com/deepset-ai/FARM.git &&\
     # git clone https://github.com/deepset-ai/haystack.git &&\
