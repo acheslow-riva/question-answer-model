@@ -36,6 +36,7 @@ def create_app(config_name):
             app.logger.info("Model not found. Compiling.")
             inputs = pickle.load(open('app/static/single.p', 'rb'))
             app.finder.reader.inferencer.model.language_model.model.eval()
+            app.finder.reader.inferencer.model.language_model.model.config.return_dict = False
             model = torch.neuron.trace(app.finder.reader.inferencer.model.language_model.model, example_inputs=inputs) 
             model.save('app/static/data/language_model/traced_model.pt')
         else:
