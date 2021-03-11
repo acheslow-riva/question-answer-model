@@ -1,28 +1,28 @@
 version: '3'
 services:
-  transformer:
-    build:
-      context: .
-    container_name: transformer
-    environment:
-      - ELASTIC_URL=${ELASTIC_URL}
-      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
-      - ELASTIC_INDEX=${ELASTIC_INDEX}
-      - FLASK_CONFIG=${FLASK_CONFIG}
-      - NEURON_RTD_ADDRESS=unix:/sock/neuron.sock
-    ports:
-      - 8000:8000
-      - 5678:5678
-    volumes:
-      - '/tmp/neuron_rtd_sock/:/sock'
-      - ./transformer_model:/transformer_model
-    networks:
-      - transformer_net
-    depends_on: 
-      # - node-1
-      - neuron-rtd
-    restart: always
-    command: tail -f /dev/null
+  # transformer:
+  #   build:
+  #     context: .
+  #   container_name: transformer
+  #   environment:
+  #     - ELASTIC_URL=${ELASTIC_URL}
+  #     - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
+  #     - ELASTIC_INDEX=${ELASTIC_INDEX}
+  #     - FLASK_CONFIG=${FLASK_CONFIG}
+  #     - NEURON_RTD_ADDRESS=unix:/sock/neuron.sock
+  #   ports:
+  #     - 8000:8000
+  #     - 5678:5678
+  #   volumes:
+  #     - '/tmp/neuron_rtd_sock/:/sock'
+  #     - ./transformer_model:/transformer_model
+  #   networks:
+  #     - transformer_net
+  #   depends_on: 
+  #     # - node-1
+  #     - neuron-rtd
+  #   restart: always
+  #   command: tail -f /dev/null
   torch:
     build:
       context: ./dev
@@ -34,8 +34,9 @@ services:
       - ELASTIC_INDEX=${ELASTIC_INDEX}
       - FLASK_CONFIG=${FLASK_CONFIG}
       - NEURON_RTD_ADDRESS=unix:/sock/neuron.sock
+      - FLASK_CONFIG=develop
     ports:
-      - 8001:8000
+      - 8000:8000
       - 5679:5678
     volumes:
       - '/tmp/neuron_rtd_sock/:/sock'

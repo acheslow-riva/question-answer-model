@@ -1,22 +1,23 @@
 import os
+import signal
+
+from gevent import monkey, signal_handler
+monkey.patch_all()
 
 from app import create_app
-from flask_script import Manager, Shell
 
-a = create_app(os.environ.get("FLASK_CONFIG", 'default'))
-manager = Manager(a)
+app = create_app(os.getenv("FLASK_CONFIG", "default"))
 
-def make_shell_context():
-    return dict(app=a)
+def shutdown(server):
+    server.log.writelines([f"Stopping {os.environ.get('HOSTNAME')} server\n"])
+    server.stop()
+    exit(0)
 
-manager.add_command('shell', Shell(make_context=make_shell_context))
-
-@manager.command
-def dev():
-    # import ptvsd
-    # print('Attaching to ptvsd!!!!!!!!', flush=True)
-    # ptvsd.enable_attach(address=("0.0.0.0", 5678))
-    a.run(host='0.0.0.0', port=8000, use_reloader=False)
-
-if __name__ == '__main__':
-    manager.run()
+@app.cli.command("deploy")
+def deploy():
+    PORT = int(os.environ.get("PORT", 8000))
+    from gevent.pywsgi import WSGIServer
+    http_server = WSGIServer(('', PORT), app)
+    signal_handler(signal.SIGTERM, shutdown, http_server)
+    signal_handler(signal.SIGINT, shutdown, http_server)
+    http_server.serve_forever()

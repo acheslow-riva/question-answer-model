@@ -9,7 +9,6 @@ from haystack import Finder
 from haystack.document_store.elasticsearch import ElasticsearchDocumentStore
 from haystack.retriever.sparse import ElasticsearchRetriever
 from haystack.reader.farm import FARMReader
-from haystack.utils import print_answers
 
 def create_app(config_name):
     app = Flask(__name__)
