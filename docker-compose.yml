@@ -34,7 +34,6 @@ services:
       - ELASTIC_INDEX=${ELASTIC_INDEX}
       - FLASK_CONFIG=${FLASK_CONFIG}
       - NEURON_RTD_ADDRESS=unix:/sock/neuron.sock
-      - FLASK_CONFIG=develop
     ports:
       - 8000:8000
       - 5679:5678
