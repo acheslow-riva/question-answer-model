@@ -23,9 +23,12 @@ def create_app(config_name):
 
     retriever = ElasticsearchRetriever(document_store=doc_store)
     model_name = '/transformer_model/app/static/data/language_model/roberta-base-squad2'
-    if not os.path.exists(model_name):
+    saved_locally = os.path.exists(model_name)
+    if not saved_locally:
         model_name = "deepset/roberta-base-squad2"
     reader = FARMReader(model_name_or_path=model_name, num_processes=0, use_gpu=False)
+    if not saved_locally:
+        reader.save("/transformer_model/app/static/data/language_model/roberta-base-squad2") 
     app.finder = Finder(reader, retriever)
     app.finder.reader.inferencer.batch_size=1
 

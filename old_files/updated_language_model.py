@@ -667,8 +667,7 @@ class Roberta(LanguageModel):
         :return: Embeddings for each token in the input sequence.
 
         """
-        # output_tuple = self.model(input_ids, padding_mask, segment_ids)
-        output_tuple = self.model(input_ids, attention_mask=segment_ids, token_type_ids=padding_mask)
+        output_tuple = self.model(input_ids, padding_mask, segment_ids)
         # output_tuple = self.model(
         #     input_ids,
         #     token_type_ids=segment_ids,
