@@ -1,31 +1,8 @@
 version: '3'
 services:
-  transformer:
-    build:
-      context: .
-    container_name: transformer
-    environment:
-      - ELASTIC_URL=${ELASTIC_URL}
-      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
-      - ELASTIC_INDEX=${ELASTIC_INDEX}
-      - FLASK_CONFIG=${FLASK_CONFIG}
-      - NEURON_RTD_ADDRESS=unix:/sock/neuron.sock
-    ports:
-      - 8000:8000
-      - 5678:5678
-    volumes:
-      - '/tmp/neuron_rtd_sock/:/sock'
-      - ./transformer_model:/transformer_model
-    networks:
-      - transformer_net
-    depends_on: 
-      # - node-1
-      - neuron-rtd
-    restart: always
-    command: tail -f /dev/null
   torch:
     build:
-      context: ./dev
+      context: ./docker_build
     working_dir: /transformer_model
     container_name: torch
     environment:
@@ -40,39 +17,18 @@ services:
     volumes:
       - '/tmp/neuron_rtd_sock/:/sock'
       - ./transformer_model:/transformer_model
-      # - ./updated_language_model.py:/usr/local/lib/python3.7/site-packages/farm/modeling/language_model.py
     networks:
       - transformer_net
     depends_on: 
-      # - node-1
       - neuron-rtd
     restart: always
-    command: tail -f /dev/null
-    # command: python3 manage.py dev
-  # node-1:
-  #   image: docker.elastic.co/elasticsearch/elasticsearch:7.9.3
-  #   container_name: node-1
-  #   environment:
-  #     - ELASTIC_PASSWORD=changeme
-  #     - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
-  #     - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
-  #     - cluster.name=dev_transformer_cluster
-  #     - xpack.security.enabled=false
-  #     - discovery.type=single-node
-  #   ports:
-  #     - 9200:9200
-  #   volumes:
-  #     - ./docker_dependencies/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
-  #     - docker_es_node_local_es_data:/usr/share/elasticsearch/data
-  #   networks:
-  #     - transformer_net
-  #   restart: always
+    entrypoint: flask
+    command: deploy
+
   neuron-rtd:
     build:
       context: ./docker_dependencies
     container_name: neuron-rtd
-    # environment:
-    #   - AWS_NEURON_VISIBLE_DEVICES="0"
     devices:
       - "/dev/neuron0"
     cap_add:
@@ -81,9 +37,7 @@ services:
     volumes:
       - '/tmp/neuron_rtd_sock/:/sock'
     restart: always
-volumes:
-  docker_es_node_local_es_data:
-    external: true
+
 networks:
   transformer_net:
     external: true
