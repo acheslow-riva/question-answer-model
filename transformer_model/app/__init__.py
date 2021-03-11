@@ -47,7 +47,12 @@ def create_app(config_name):
             model = torch.jit.load('app/static/data/language_model/traced_model.pt')
         app.finder.reader.inferencer.model.language_model.model = model
         app.finder.reader.inferencer.model.language_model.model.eval()
-
+        query = "What does AHRQ stand for?"
+        try:
+            _ = app.finder.get_answers(query, top_k_retriever=10, top_k_reader=1)
+            app.logger.info("Primed model")
+        except RuntimeError:
+            app.logger.error("Model not working properly")
     from app.main import main as main_blueprint
     app.register_blueprint(main_blueprint)
 
