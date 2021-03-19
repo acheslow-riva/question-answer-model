@@ -24,7 +24,7 @@ insmod neuron.ko
 echo "neuron" | tee -a /etc/modules-load.d/neuron.conf
 echo 'KERNEL=="neuron*", MODE="0666"' > /lib/udev/rules.d/neuron-udev.rules
 ls dev/neuron*
-lsmod |grep -i neuron
+lsmod | grep -i neuron
 ```
 
 ## RuntimeError: NeuronDevice
@@ -34,6 +34,13 @@ This is caused by a hardware conflict between the host and container. You can fi
 ```bash
 sudo service neuron-rtd stop
 ```
+
+We can prevent it from starting up by running:
+```bash
+sudo systemctl disable neuron-rtd.service
+```
+
+This removes `/etc/systemd/system/multi-user.target.wants/neuron-rtd.service`
 
 Then you can restart the containers by running `docker-compose down && docker-compose up -d` from this repo in the `web.mgmt` profile.
 
@@ -53,7 +60,7 @@ Traceback (most recent call last):
     _force_outplace,
 RuntimeError: Encountering a dict at the output of the tracer might cause the trace to be incorrect, this is only valid if the container structure does not change based on the module's inputs. Consider using a constant container instead (e.g. for `list`, use a `tuple` instead. for `dict`, use a `NamedTuple` instead). If you absolutely need this and know the side effects, pass strict=False to trace() to allow this behavior.
 ```
-
+We can fix the above by making the following change to the model configuration: `model.config.return_dict = False`
 ## RuntimeError: forward()
 ```bash
 Traceback (most recent call last):

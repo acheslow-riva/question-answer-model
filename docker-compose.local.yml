@@ -8,39 +8,27 @@ services:
     environment:
       - ELASTIC_HOST=${ELASTIC_HOST:-localhost}
       - ELASTIC_PORT=${ELASTIC_PORT:-9200}
-      - ELASTIC_URL=${ELASTIC_URL:-http://${ELASTIC_HOST}${ELASTIC_PORT}}
+      - ELASTIC_URL=${ELASTIC_URL:-"http://localhost:9200"}
       - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
       - ELASTIC_INDEX=${ELASTIC_INDEX}
       - FLASK_CONFIG=${FLASK_CONFIG}
       - NEURON_RTD_ADDRESS=unix:/sock/neuron.sock
     ports:
-      - 8000:8000
+      - ${HOST_PORT:-8000}:8000
       - 5679:5678
     volumes:
-      - '/tmp/neuron_rtd_sock/:/sock'
       - ./transformer_model:/transformer_model
       - ./old_files/updated_language_model.py:/usr/local/lib/python3.7/site-packages/farm/modeling/language_model.py
     networks:
       - transformer_net
-    depends_on: 
-      - neuron-rtd
+      - elastic_esnet
     restart: always
     entrypoint: flask
     command: deploy
-
-  neuron-rtd:
-    build:
-      context: ./docker_dependencies
-    container_name: neuron-rtd
-    devices:
-      - "/dev/neuron0"
-    cap_add:
-      - IPC_LOCK
-      - SYS_ADMIN
-    volumes:
-      - '/tmp/neuron_rtd_sock/:/sock'
-    restart: always
+    # command: tail -f /dev/null
 
 networks:
   transformer_net:
+    external: true
+  elastic_esnet:
     external: true

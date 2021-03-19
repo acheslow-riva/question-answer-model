@@ -1,3 +1,4 @@
+elasticsearch-dsl==7.3.0
 farm-haystack==0.7.0
 Flask-Script==2.0.6
 gevent==21.1.2

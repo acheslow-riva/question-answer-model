@@ -8,7 +8,8 @@ RUN echo $'[neuron] \nname=Neuron YUM Repository \nbaseurl=https://yum.repos.neu
         aws-neuron-runtime aws-neuron-tools python3 gcc-c++ &&\
     echo $'[global]\nextra-index-url = https://pip.repos.neuron.amazonaws.com' > /etc/pip.conf &&\
     pip3 install --upgrade pip &&\
-    pip install --no-cache-dir -r requirements.txt
+    pip install --no-cache-dir -r requirements.txt &&\
+    python3 -m nltk.downloader punkt
 
 WORKDIR /transformer_model
 ENV FLASK_APP manage.py

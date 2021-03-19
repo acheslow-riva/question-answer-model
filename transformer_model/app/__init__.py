@@ -13,7 +13,7 @@ from haystack.reader.farm import FARMReader
 def create_app(config_name):
     app = Flask(__name__)
     app.config.from_object(config[config_name])
-    host = config[config_name].ELASTIC_URL
+    host = config[config_name].ELASTIC_HOST
     port = config[config_name].ELASTIC_PORT
     index = config[config_name].ELASTIC_INDEX
     es_password = config[config_name].ELASTIC_PASSWORD
