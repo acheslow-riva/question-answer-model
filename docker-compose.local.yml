@@ -6,6 +6,7 @@ x-elasticsearch-credentials: &elasticsearch-credentials
   ELASTIC_URL: ${ELASTIC_URL:-"http://localhost:9200"}
   ELASTIC_USER: ${ELASTIC_USER:-elastic}
   ELASTIC_INDEX: ${ELASTIC_INDEX}
+  QA_INDEX: ${QA_INDEX:-ahrq_qa}
 
 services:
   torch:

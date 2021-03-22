@@ -6,7 +6,7 @@ class Config:
     ELASTIC_URL = os.environ.get('ELASTIC_URL', f"http://{ELASTIC_HOST}:{ELASTIC_PORT}")
     ELASTIC_USER = os.environ.get('ELASTIC_USER', 'elastic')
     ELASTIC_PASSWORD = os.environ.get('ELASTIC_PASSWORD')
-    ELASTIC_INDEX = os.environ.get('ELASTIC_INDEX', 'ahrq')
+    QA_INDEX = os.environ.get('QA_INDEX', 'ahrq')
 
 
 class LocalConfig(Config):

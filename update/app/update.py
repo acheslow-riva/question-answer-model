@@ -19,7 +19,7 @@ should have a `text` field key whose value is the paragraph, and a `meta` field 
 key `url` whose value is the page's url.
 """
 
-INDEX = "ahrq_qa2"
+INDEX = os.environ.get("QA_INDEX")
 
 
 def chunks(lst, n):
@@ -111,7 +111,7 @@ if __name__ == "__main__":
     start_date = datetime(2021, 3, 17)
     a = A("max", field="timestamp")
     r = Search(index=INDEX)
-    s = Search(index="webpages")
+    s = Search(index=os.environ.get("ELASTIC_INDEX"))
     r.aggs.bucket("latest_date", a)
     start_date = r[0:0].execute().aggs.latest_date
     if start_date.value:

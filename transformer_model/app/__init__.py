@@ -27,7 +27,7 @@ def create_app(config_name):
     app.config.from_object(config[config_name])
     host = config[config_name].ELASTIC_HOST
     port = config[config_name].ELASTIC_PORT
-    index = config[config_name].ELASTIC_INDEX
+    index = config[config_name].QA_INDEX
     es_password = config[config_name].ELASTIC_PASSWORD
     use_traced_model = config[config_name].USE_TRACED_MODEL
     print(index, flush=True)
