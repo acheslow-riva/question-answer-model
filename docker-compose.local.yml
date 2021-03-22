@@ -23,7 +23,7 @@ services:
       - 5679:5678
     volumes:
       - ./transformer_model:/transformer_model
-      - ./old_files/updated_language_model.py:/usr/local/lib/python3.7/site-packages/farm/modeling/language_model.py
+      - ./docker_build/updated_language_model.py:/usr/local/lib/python3.7/site-packages/farm/modeling/language_model.py
     networks:
       - transformer_net
       - elastic_esnet
