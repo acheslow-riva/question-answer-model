@@ -13,7 +13,7 @@ from . import main
 
 @main.route('/')
 def index():
-    return jsonify({"hello":"world"})
+    return jsonify({"hello":"question-answer"})
 
 @main.route('/load_default_model')
 def default_model():
@@ -35,9 +35,9 @@ def load_traced_model():
     return jsonify({'done':'loading'})
 
 @main.route('/get_answers')
-def get_answers(query=None):
+def get_answers():
     start = time()
-    query = request.args.get('query')
+    query = request.args.get('query', request.args.get('q'))
     top_k_retriever = request.args.get('top_k_retriever', 10)
     if not query: query = 'what does ahrq stand for'
     response = current_app.finder.get_answers(query, top_k_retriever=top_k_retriever, top_k_reader=1)

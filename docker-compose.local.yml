@@ -1,4 +1,12 @@
 version: '3'
+x-elasticsearch-credentials: &elasticsearch-credentials
+  ELASTIC_PASSWORD: ${ELASTIC_PASSWORD}
+  ELASTIC_PORT: ${ELASTIC_PORT:-9200}
+  ELASTIC_HOST: ${ELASTIC_HOST:-localhost}
+  ELASTIC_URL: ${ELASTIC_URL:-"http://localhost:9200"}
+  ELASTIC_USER: ${ELASTIC_USER:-elastic}
+  ELASTIC_INDEX: ${ELASTIC_INDEX}
+
 services:
   torch:
     build:
@@ -6,13 +14,9 @@ services:
     working_dir: /transformer_model
     container_name: torch
     environment:
-      - ELASTIC_HOST=${ELASTIC_HOST:-localhost}
-      - ELASTIC_PORT=${ELASTIC_PORT:-9200}
-      - ELASTIC_URL=${ELASTIC_URL:-"http://localhost:9200"}
-      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
-      - ELASTIC_INDEX=${ELASTIC_INDEX}
-      - FLASK_CONFIG=${FLASK_CONFIG}
-      - NEURON_RTD_ADDRESS=unix:/sock/neuron.sock
+      <<: *elasticsearch-credentials
+      FLASK_CONFIG: ${FLASK_CONFIG}
+      NEURON_RTD_ADDRESS: "unix:/sock/neuron.sock"
     ports:
       - ${HOST_PORT:-8000}:8000
       - 5679:5678
@@ -25,7 +29,23 @@ services:
     restart: always
     entrypoint: flask
     command: deploy
-    # command: tail -f /dev/null
+  
+  update:
+    build: 
+      context: ./update
+    image: dexi-qa-update:latest
+    container_name: qa_update
+    working_dir: /app/app
+    environment:
+      <<: *elasticsearch-credentials
+      CRON_STRING: "${CRON_STRING}"
+    networks:
+      - transformer_net
+      - elastic_esnet
+    volumes:
+      - ./update/app:/app/app
+    restart: always
+    command: ["start-cron", "${CRON_STRING}"]
 
 networks:
   transformer_net:

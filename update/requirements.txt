@@ -1,0 +1,2 @@
+elasticsearch-dsl==7.3.0
+farm-haystack==0.7.0
