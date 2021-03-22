@@ -10,6 +10,17 @@ from haystack.document_store.elasticsearch import ElasticsearchDocumentStore
 from haystack.retriever.sparse import ElasticsearchRetriever
 from haystack.reader.farm import FARMReader
 
+
+def train_model(app):
+    app.logger.info("Compiling model.")
+    inputs = pickle.load(open('app/static/single.p', 'rb'))
+    app.finder.reader.inferencer.model.language_model.model.eval()
+    app.finder.reader.inferencer.model.language_model.model.config.return_dict = False
+    app.finder.reader.inferencer.model.language_model.model.encoder.config.output_hidden_states = False
+    model = torch.neuron.trace(app.finder.reader.inferencer.model.language_model.model, example_inputs=inputs) 
+    model.save('app/static/data/language_model/traced_model.pt')
+
+
 def create_app(config_name):
     app = Flask(__name__)
     app.config.from_object(config[config_name])
@@ -36,12 +47,7 @@ def create_app(config_name):
         direct = os.listdir('app/static/data/language_model')
         if not 'traced_model.pt' in direct:
             app.logger.info("Model not found. Compiling.")
-            inputs = pickle.load(open('app/static/single.p', 'rb'))
-            app.finder.reader.inferencer.model.language_model.model.eval()
-            app.finder.reader.inferencer.model.language_model.model.config.return_dict = False
-            app.finder.reader.inferencer.model.language_model.model.encoder.config.output_hidden_states = False
-            model = torch.neuron.trace(app.finder.reader.inferencer.model.language_model.model, example_inputs=inputs) 
-            model.save('app/static/data/language_model/traced_model.pt')
+            train_model(app)
         else:
             app.logger.info("Model exists. Loading")
             model = torch.jit.load('app/static/data/language_model/traced_model.pt')
@@ -49,8 +55,13 @@ def create_app(config_name):
         app.finder.reader.inferencer.model.language_model.model.eval()
         query = "What does AHRQ stand for?"
         try:
-            _ = app.finder.get_answers(query, top_k_retriever=10, top_k_reader=1)
-            app.logger.info("Primed model")
+            res = app.finder.get_answers(query, top_k_retriever=10, top_k_reader=1)
+            response = res['answers'][0]['answer']
+            if response != "Agency for Healthcare Research and Quality":
+                app.logger.info("Model error. Re-compiling.")
+                train_model(app)
+            else:
+                app.logger.info("Primed model")
         except RuntimeError:
             app.logger.error("Model not working properly")
     from app.main import main as main_blueprint
