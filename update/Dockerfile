@@ -1,5 +1,4 @@
-#FROM docker.ahrq.local:5000/python:3.7
-FROM python:3.7
+FROM docker.ahrq.local:5000/python:3.7
 ADD requirements.txt /app/
 
 WORKDIR /app

@@ -17,8 +17,9 @@ def train_model(app):
     app.finder.reader.inferencer.model.language_model.model.eval()
     app.finder.reader.inferencer.model.language_model.model.config.return_dict = False
     app.finder.reader.inferencer.model.language_model.model.encoder.config.output_hidden_states = False
-    model = torch.neuron.trace(app.finder.reader.inferencer.model.language_model.model, example_inputs=inputs) 
+    model = torch.neuron.trace(app.finder.reader.inferencer.model.language_model.model, example_inputs=inputs)
     model.save('app/static/data/language_model/traced_model.pt')
+    app.model = model
 
 
 def create_app(config_name):
@@ -59,6 +60,7 @@ def create_app(config_name):
             response = res['answers'][0]['answer']
             if response != "Agency for Healthcare Research and Quality":
                 app.logger.info("Model error. Re-compiling.")
+                app.finder = Finder(reader, retriever)
                 train_model(app)
             else:
                 app.logger.info("Primed model")
