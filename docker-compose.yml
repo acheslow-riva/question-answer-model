@@ -54,7 +54,6 @@ services:
       CRON_STRING: "${CRON_STRING}"
     networks:
       - transformer_net
-      - elastic_esnet
     volumes:
       - ./update/app:/app/app
     restart: always
