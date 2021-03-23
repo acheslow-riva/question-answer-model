@@ -5,6 +5,7 @@ import torch_neuron
 import os
 from app.config import config
 
+from elasticsearch_dsl.connections import connections
 from haystack import Finder
 from haystack.document_store.elasticsearch import ElasticsearchDocumentStore
 from haystack.retriever.sparse import ElasticsearchRetriever
@@ -32,7 +33,10 @@ def create_app(config_name):
     use_traced_model = config[config_name].USE_TRACED_MODEL
     print(index, flush=True)
     doc_store = ElasticsearchDocumentStore(host=host, port=port, username='elastic', password=es_password, index=index)
-
+    es = connections.create_connection(hosts=[config[config_name].ELASTIC_URL], 
+        http_auth=(config[config_name].ELASTIC_USER, es_password)
+    )
+    app.es = es
     retriever = ElasticsearchRetriever(document_store=doc_store)
     model_name = '/transformer_model/app/static/data/language_model/roberta-base-squad2'
     saved_locally = os.path.exists(model_name)
