@@ -52,7 +52,14 @@ def create_app(config_name):
         direct = os.listdir('app/static/data/language_model')
         if not 'traced_model.pt' in direct:
             app.logger.info("Model not found. Compiling.")
-            train_model(app)
+            app.logger.info("Compiling model.")
+            inputs = pickle.load(open('app/static/single.p', 'rb'))
+            app.finder.reader.inferencer.model.language_model.model.eval()
+            app.finder.reader.inferencer.model.language_model.model.config.return_dict = False
+            app.finder.reader.inferencer.model.language_model.model.encoder.config.output_hidden_states = False
+            model = torch.neuron.trace(app.finder.reader.inferencer.model.language_model.model, example_inputs=inputs)
+            model.save('app/static/data/language_model/traced_model.pt')
+            app.model = model
         else:
             app.logger.info("Model exists. Loading")
             model = torch.jit.load('app/static/data/language_model/traced_model.pt')
@@ -65,7 +72,14 @@ def create_app(config_name):
             if response != "Agency for Healthcare Research and Quality":
                 app.logger.info("Model error. Re-compiling.")
                 app.finder = Finder(reader, retriever)
-                train_model(app)
+                app.logger.info("Compiling model.")
+                inputs = pickle.load(open('app/static/single.p', 'rb'))
+                app.finder.reader.inferencer.model.language_model.model.eval()
+                app.finder.reader.inferencer.model.language_model.model.config.return_dict = False
+                app.finder.reader.inferencer.model.language_model.model.encoder.config.output_hidden_states = False
+                model = torch.neuron.trace(app.finder.reader.inferencer.model.language_model.model, example_inputs=inputs)
+                model.save('app/static/data/language_model/traced_model.pt')
+                app.model = model
             else:
                 app.logger.info("Primed model")
         except RuntimeError:
