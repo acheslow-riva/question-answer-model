@@ -1,7 +1,11 @@
+import logging
 import os
 
 from haystack.document_store.elasticsearch import ElasticsearchDocumentStore
 from haystack.retriever.dense import DensePassageRetriever
+
+
+logging.info("Connecting to elasticsearch")
 
 document_store = ElasticsearchDocumentStore(
     host=os.environ.get("ELASTIC_HOST"),
@@ -20,4 +24,5 @@ retriever = DensePassageRetriever(document_store=document_store,
                 embed_title=False,
                 use_fast_tokenizers=True)
 
+logging.info("Updating stuff")
 document_store.update_embeddings(retriever)
