@@ -41,8 +41,9 @@ def get_answers():
     start = time()
     query = request.args.get('query', request.args.get('q'))
     top_k_retriever = request.args.get('top_k_retriever', 10)
+    top_k = int(request.args.get("rows", 1))
     if not query: query = 'what does ahrq stand for'
-    response = current_app.finder.get_answers(query, top_k_retriever=top_k_retriever, top_k_reader=1)
+    response = current_app.finder.get_answers(query, top_k_retriever=top_k_retriever, top_k_reader=top_k)
     return jsonify({'response': response,
                     'Elapsed time': time()-start})
 
