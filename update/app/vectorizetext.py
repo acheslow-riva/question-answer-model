@@ -54,5 +54,13 @@ for hit in s.params(scroll="1d").scan():
     delete_ids.append(hit.meta.id)
     batch_docs.append(doc)
     counter += 1
+
+# Last batch
+if batch_docs:
+    batch_emb = retriever.embed_passages(batch_docs)
+    for emb, doc in zip(batch_emb, batch_docs):
+        doc.embedding = emb
+    document_store.write_documents(batch_docs)
+    s.query(Q("ids", values=delete_ids)).delete()
 # https://github.com/deepset-ai/haystack/issues/601#issuecomment-729469535
 # document_store.update_embeddings(retriever)
