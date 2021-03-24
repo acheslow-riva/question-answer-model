@@ -20,11 +20,13 @@ def ask():
     top_k = int(request.args.get("rows", request.args.get("top_k", 1)))
     url = request.args.get('url')
     if not query:
-        abort(400)
+        abort(400, "no query sent in the q or query url parameter")
     if url:
         q = Q("term", url=url)
         s = Search(index=current_app.config.get('QA_INDEX'))
         docs = [Document.from_dict(hit.to_dict()) for hit in s.query(q).scan()]
+        if not docs:
+            abort(404, f"document {url} not found")
         response = current_app.finder.get_node("Reader").predict(query=query, documents=docs, top_k=top_k)
     else:
         response = current_app.finder.run(query, top_k_retriever=top_k_retriever, top_k_reader=top_k)
