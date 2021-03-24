@@ -16,15 +16,14 @@ from haystack.reader.farm import FARMReader
 def create_app(config_name):
     app = Flask(__name__)
     app.config.from_object(config[config_name])
-    host = config[config_name].ELASTIC_HOST
-    port = config[config_name].ELASTIC_PORT
-    index = config[config_name].QA_INDEX
-    es_password = config[config_name].ELASTIC_PASSWORD
-    use_traced_model = config[config_name].USE_TRACED_MODEL
-    print(index, flush=True)
+    host = app.config.get("ELASTIC_HOST")
+    port = app.config.get("ELASTIC_PORT")
+    index = app.config.get("QA_INDEX")
+    es_password = app.config.get("ELASTIC_PASSWORD")
+    use_traced_model = app.config.get("USE_TRACED_MODEL")
     doc_store = ElasticsearchDocumentStore(host=host, port=port, username='elastic', password=es_password, index=index)
     es = connections.create_connection(hosts=[config[config_name].ELASTIC_URL], 
-        http_auth=(config[config_name].ELASTIC_USER, es_password)
+        http_auth=(app.config.get("ELASTIC_USER"), es_password)
     )
     app.es = es
     retriever = ElasticsearchRetriever(document_store=doc_store)
@@ -36,7 +35,7 @@ def create_app(config_name):
     if not saved_locally:
         reader.save("/transformer_model/app/static/data/language_model/roberta-base-squad2") 
     app.finder = ExtractiveQAPipeline(reader, retriever)
-    app.finder.get_node("Reader").inferencer.batch_size=1
+    app.finder.get_node("Reader").inferencer.batch_size = 1
 
     if use_traced_model:
         direct = os.listdir('app/static/data/language_model')
@@ -49,7 +48,6 @@ def create_app(config_name):
             app.finder.get_node("Reader").inferencer.model.language_model.model.encoder.config.output_hidden_states = False
             model = torch.neuron.trace(app.finder.get_node("Reader").inferencer.model.language_model.model, example_inputs=inputs)
             model.save('app/static/data/language_model/traced_model.pt')
-            app.model = model
         else:
             app.logger.info("Model exists. Loading")
             model = torch.jit.load('app/static/data/language_model/traced_model.pt')
@@ -69,7 +67,6 @@ def create_app(config_name):
                 app.finder.get_node("Reader").inferencer.model.language_model.model.encoder.config.output_hidden_states = False
                 model = torch.neuron.trace(app.finder.get_node("Reader").inferencer.model.language_model.model, example_inputs=inputs)
                 model.save('app/static/data/language_model/traced_model.pt')
-                app.model = model
             else:
                 app.logger.info("Primed model")
         except RuntimeError:
