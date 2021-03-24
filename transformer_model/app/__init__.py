@@ -7,20 +7,10 @@ from app.config import config
 
 from elasticsearch_dsl.connections import connections
 from haystack import Finder
+from haystack.pipeline import ExtractiveQAPipeline
 from haystack.document_store.elasticsearch import ElasticsearchDocumentStore
 from haystack.retriever.sparse import ElasticsearchRetriever
 from haystack.reader.farm import FARMReader
-
-
-def train_model(app):
-    app.logger.info("Compiling model.")
-    inputs = pickle.load(open('app/static/single.p', 'rb'))
-    app.finder.reader.inferencer.model.language_model.model.eval()
-    app.finder.reader.inferencer.model.language_model.model.config.return_dict = False
-    app.finder.reader.inferencer.model.language_model.model.encoder.config.output_hidden_states = False
-    model = torch.neuron.trace(app.finder.reader.inferencer.model.language_model.model, example_inputs=inputs)
-    model.save('app/static/data/language_model/traced_model.pt')
-    app.model = model
 
 
 def create_app(config_name):
@@ -45,8 +35,8 @@ def create_app(config_name):
     reader = FARMReader(model_name_or_path=model_name, num_processes=0, use_gpu=False)
     if not saved_locally:
         reader.save("/transformer_model/app/static/data/language_model/roberta-base-squad2") 
-    app.finder = Finder(reader, retriever)
-    app.finder.reader.inferencer.batch_size=1
+    app.finder = ExtractiveQAPipeline(reader, retriever)
+    app.finder.get_node("Reader").inferencer.batch_size=1
 
     if use_traced_model:
         direct = os.listdir('app/static/data/language_model')
@@ -54,30 +44,30 @@ def create_app(config_name):
             app.logger.info("Model not found. Compiling.")
             app.logger.info("Compiling model.")
             inputs = pickle.load(open('app/static/single.p', 'rb'))
-            app.finder.reader.inferencer.model.language_model.model.eval()
-            app.finder.reader.inferencer.model.language_model.model.config.return_dict = False
-            app.finder.reader.inferencer.model.language_model.model.encoder.config.output_hidden_states = False
-            model = torch.neuron.trace(app.finder.reader.inferencer.model.language_model.model, example_inputs=inputs)
+            app.finder.get_node("Reader").inferencer.model.language_model.model.eval()
+            app.finder.get_node("Reader").inferencer.model.language_model.model.config.return_dict = False
+            app.finder.get_node("Reader").inferencer.model.language_model.model.encoder.config.output_hidden_states = False
+            model = torch.neuron.trace(app.finder.get_node("Reader").inferencer.model.language_model.model, example_inputs=inputs)
             model.save('app/static/data/language_model/traced_model.pt')
             app.model = model
         else:
             app.logger.info("Model exists. Loading")
             model = torch.jit.load('app/static/data/language_model/traced_model.pt')
-        app.finder.reader.inferencer.model.language_model.model = model
-        app.finder.reader.inferencer.model.language_model.model.eval()
+        app.finder.get_node("Reader").inferencer.model.language_model.model = model
+        app.finder.get_node("Reader").inferencer.model.language_model.model.eval()
         query = "What does AHRQ stand for?"
         try:
-            res = app.finder.get_answers(query, top_k_retriever=10, top_k_reader=1)
+            res = app.finder.run(query, top_k_retriever=10, top_k_reader=1)
             response = res['answers'][0]['answer']
             if response != "Agency for Healthcare Research and Quality":
                 app.logger.info("Model error. Re-compiling.")
-                app.finder = Finder(reader, retriever)
+                app.finder = ExtractiveQAPipeline(reader, retriever)
                 app.logger.info("Compiling model.")
                 inputs = pickle.load(open('app/static/single.p', 'rb'))
-                app.finder.reader.inferencer.model.language_model.model.eval()
-                app.finder.reader.inferencer.model.language_model.model.config.return_dict = False
-                app.finder.reader.inferencer.model.language_model.model.encoder.config.output_hidden_states = False
-                model = torch.neuron.trace(app.finder.reader.inferencer.model.language_model.model, example_inputs=inputs)
+                app.finder.get_node("Reader").inferencer.model.language_model.model.eval()
+                app.finder.get_node("Reader").inferencer.model.language_model.model.config.return_dict = False
+                app.finder.get_node("Reader").inferencer.model.language_model.model.encoder.config.output_hidden_states = False
+                model = torch.neuron.trace(app.finder.get_node("Reader").inferencer.model.language_model.model, example_inputs=inputs)
                 model.save('app/static/data/language_model/traced_model.pt')
                 app.model = model
             else:
