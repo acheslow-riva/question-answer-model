@@ -21,7 +21,7 @@ def ask():
     top_k_retriever = args.get('top_k_retriever', json.get('top_k_retriever', 10))
     top_k = int(args.get("rows", args.get("top_k", json.get("rows", json.get("top_k", 1)))))
     body = json.get("body")
-    url = args.get('url')
+    url = args.get('url', json.get("url"))
     if not query:
         abort(400, "no query sent in the q or query url parameter")
     if url:
