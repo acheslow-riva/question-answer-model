@@ -11,14 +11,17 @@ from . import main
 def index():
     return jsonify({"hello":"question-answer"})
 
-@main.route('/get_answers')
-@main.route('/ask')
+@main.route('/get_answers', methods=["GET", "POST"])
+@main.route('/ask', methods=["GET", "POST"])
 def ask():
     start = time()
-    query = request.args.get('query', request.args.get('q'))
-    top_k_retriever = request.args.get('top_k_retriever', 10)
-    top_k = int(request.args.get("rows", request.args.get("top_k", 1)))
-    url = request.args.get('url')
+    args = request.args or {}
+    json = request.json or {}
+    query = args.get('query', args.get('q', json.get("query", json.get("q"))))
+    top_k_retriever = args.get('top_k_retriever', json.get('top_k_retriever', 10))
+    top_k = int(args.get("rows", args.get("top_k", json.get("rows", json.get("top_k", 1)))))
+    body = json.get("body")
+    url = args.get('url')
     if not query:
         abort(400, "no query sent in the q or query url parameter")
     if url:
@@ -28,6 +31,9 @@ def ask():
         if not docs:
             abort(404, f"document {url} not found")
         response = current_app.finder.get_node("Reader").predict(query=query, documents=docs, top_k=top_k)
+    elif body:
+        doc = Document(text=body)
+        response = current_app.finder.get_node("Reader").predict(query=query, documents=[doc], top_k=top_k)
     else:
         response = current_app.finder.run(query, top_k_retriever=top_k_retriever, top_k_reader=top_k)
     return jsonify({'response': response,
