@@ -1,4 +1,4 @@
-version: '3'
+version: "3.4"
 x-elasticsearch-credentials: &elasticsearch-credentials
   ELASTIC_PASSWORD: ${ELASTIC_PASSWORD}
   ELASTIC_PORT: ${ELASTIC_PORT:-9200}
